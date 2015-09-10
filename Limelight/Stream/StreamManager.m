@@ -89,8 +89,28 @@
     
     int majorVersion = [[appversion substringToIndex:1] intValue];
     Log(LOG_I, @"Server is generation %d", majorVersion);
+
+
+
+    UIView *targetView = _renderView;
+
+    if ([UIScreen screens].count > 1) {
+        UIScreen *extScreen = [UIScreen screens][1];
+        extScreen.overscanCompensation = UIScreenOverscanCompensationInsetApplicationFrame;
+
+        CGRect extFrame = extScreen.bounds;
+        UIWindow *extWindow = [[UIWindow alloc] initWithFrame:extFrame];
+
+        extWindow.screen = extScreen;
+        extWindow.hidden = NO;
+
+        targetView = extWindow;
+    }
+
+
+
     
-    VideoDecoderRenderer* renderer = [[VideoDecoderRenderer alloc]initWithView:_renderView];
+    VideoDecoderRenderer* renderer = [[VideoDecoderRenderer alloc]initWithView:targetView];
     _connection = [[Connection alloc] initWithConfig:_config renderer:renderer connectionCallbacks:_callbacks serverMajorVersion:majorVersion];
     NSOperationQueue* opQueue = [[NSOperationQueue alloc] init];
     [opQueue addOperation:_connection];
